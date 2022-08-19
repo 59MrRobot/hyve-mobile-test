@@ -7,20 +7,24 @@ interface Props {
 }
 
 export const Posts: React.FC<Props> = React.memo(
-  ({ posts }) => (
-    <div className="posts">
-      <div className="posts__wrapper">
-        <ul className="posts__list">
-          {posts.map((post, index) => (
-            <li key={post.data.id}>
-              <Post
-                post={post}
-                number={index + 1}
-              />
-            </li>
-          ))}
-        </ul>
+  ({ posts }) => (posts.length
+    ? (
+      <div className="posts">
+        <div className="posts__wrapper">
+          <ul className="posts__list">
+            {posts.map((post, index) => (
+              <li key={post.data.id}>
+                <Post
+                  post={post}
+                  number={index + 1}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </div>
-  ),
+    )
+    : (
+      <div>No posts founds</div>
+    )),
 );
