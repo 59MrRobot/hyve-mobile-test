@@ -1,0 +1,42 @@
+.post-details {
+  &__wrapper {
+    margin: 0 auto;
+    max-width: 1136px;
+
+    h1 {
+      margin-top: 8px;
+      font-size: 1.5em;
+    }
+
+    h2 {
+      margin-top: 4px;
+      font-size: 1.25em;
+      color: red;
+    }
+
+    p {
+      margin-top: 8px;
+    }
+    
+    a {
+      color: grey;
+    }
+  }
+
+  &__button {
+    padding: 8px 24px;
+    border: none;
+
+    background-color: grey;
+    color: #fff;
+    text-transform: uppercase;
+    cursor: pointer;
+
+    transition: background-color 0.3s, transform 0.3s;
+
+    &:hover {
+      background-color: black;
+      transform: scale(1.1);
+    }
+  }
+}
