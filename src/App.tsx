@@ -12,12 +12,15 @@ import { HomePage } from './components/HomePage';
 import { Loader } from './components/Loader';
 import { PostDetails } from './components/PostDetails';
 import { Posts } from './components/Posts';
+import { Toast } from './components/Toast';
 import AppContext from './context/AppContext';
 
 export const App: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [showPosts, setShowPosts] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showError, setShowError] = useState(false);
 
   const location = useLocation();
 
@@ -28,44 +31,62 @@ export const App: React.FC = () => {
   const loadPosts = useCallback(async () => {
     const loadedPosts = await fetchPosts('trendingsubreddits');
 
-    setPosts(loadedPosts.data.children);
-    setShowPosts(true);
+    if (loadedPosts !== 'Error') {
+      setPosts(loadedPosts.data.children);
+      setFetchError(false);
+    } else {
+      setFetchError(true);
+      setErrorMessage('Error fetching posts');
+    }
   }, []);
 
   useEffect(() => {
+    loadPosts();
+
     if (location.pathname.includes('/posts')) {
       loadPosts();
     }
   }, [loadPosts, location.pathname]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setShowError(false);
+    }, 5000);
+  }, [showError]);
+
   return (
     <AppContext.Provider value={useMemo(() => ({
       selectedPost,
       handlePostSelection,
-    }), [handlePostSelection, selectedPost])}
+      fetchError,
+    }), [fetchError, handlePostSelection, selectedPost])}
     >
       <div className="App">
         <Header />
 
+        {showError && (
+          <Toast errorMessage={errorMessage} />
+        )}
+
         <Routes>
           <Route
             path="/"
-            element={<HomePage loadPosts={loadPosts} />}
+            element={<HomePage setShowError={setShowError} />}
           />
-          <Route
-            path="/posts"
-            element={
-              showPosts
-                ? (
-                  <Posts
-                    posts={posts}
-                  />
-                )
-                : (
-                  <Loader />
-                )
-            }
-          />
+          {!fetchError && (
+            <Route
+              path="/posts"
+              element={
+                posts.length
+                  ? (
+                    <Posts posts={posts} />
+                  )
+                  : (
+                    <Loader />
+                  )
+              }
+            />
+          )}
           <Route
             path={`/posts/:${selectedPost?.data.id}`}
             element={<PostDetails />}
